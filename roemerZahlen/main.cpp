@@ -19,39 +19,69 @@
 **/
 
 
-/**
- * @brief  Gibt das Ergebnis des Automaten auf der Konsole aus.
- *
- * Diese Funktion gibt entweder die arabische Zahl für den erreichten Endzustand
- * oder eine passende Fehlermeldung aus, wenn die Eingabe ungültig war.
- *
- * @param[in] endzustand
- *      Der letzte Zustand, den der Automat erreicht hat.
- *      Gültige Werte sind "Q1" bis "Q10".
- *      Bei ungültiger römischer Zahl (z. B. "IIX") wird "err" übergeben und
- *      als Fehlermeldung auf die Konsole ausgegeben.
- *
- * @param[in] eingabefehler
- *      Gibt an, ob die Benutzereingabe Zeichen enthält, die nicht zum
- *      Eingabealphabet des Automaten gehören (also nicht 'I', 'V' oder 'X').
- *      In diesem Fall wird ebenfalls eine Fehlermeldung ausgegeben.
- *
- * @return
- *      Diese Funktion liefert keinen Rückgabewert. Fehler oder Ergebnisse
- *      werden direkt auf der Konsole ausgegeben. Das Programm läuft anschließend
- *      weiter und wartet auf die nächste Eingabe.
- */
-
-void gebeLoesungAus(string endzustand, bool eingabefehler) {
-    cout << "Debugger - Finaler zustand -> (" << endzustand << ")\n";
-    if (eingabefehler) {
-        cout << "\033[31mIrgend etwas eingegeben, was nicht dem Eingabe-Alphabet entspricht\033[0m" << std::endl;
-    } else if (endzustand == "err") {
-        cout << "\033[31mKeine richtige römische Zahl zwischen I - X\033[0m" << std::endl;
-    } else {
-        cout << "\033[32mDie arabische Nummer ist -> " << endzustaende.at(endzustand) << "\033[0m" << std::endl;
+bool tueEtwas(string& aktuellerZustand, string eingabe, eingabefehler fehlerBeiDerEingabe) {
+    if (fehlerBeiDerEingabe == eingabefehler::nichtImEingabeAlphabet) {
+        cout << "Es wurde ein Zeichen eingegeben, welches nicht im Eingabe-Alphabet liegt (" << eingabe << ")\n";
+        return eingabefehlerErkannt;
     }
-    cout << "-------------------------------------------------\n";
+    if (fehlerBeiDerEingabe == eingabefehler::keinZeichenEingegeben) {
+        cout << "Es wurde kein Zeichen eingegeben. Nur Enter grdruekt\n";
+        return eingabefehlerErkannt;
+    }
+    if (fehlerBeiDerEingabe == eingabefehler::mehrAlsEinZeichenEingegeben) {
+        cout << "Es wurde zwei oder mehr Zeichen auf einmal eingegeben (" << eingabe << ")\n";
+        return eingabefehlerErkannt;
+    }
+    //----------------------------------------------------------------------------
+    aktuellerZustand = zustandsUebergangTabelle[{aktuellerZustand, eingabe}]; // Hier passssiert die Magie
+    cout << "Debugger - Aktuelles betrachtetes Zeichen (" << eingabe << ") Wo bin ich gerade -> (" << aktuellerZustand << ")\n";
+
+    if (aktuellerZustand == "err") {
+        cout << "Es wurde der err zustand der State Machine erreicht \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q101") {
+        cout << "Eingegeben wurde ---> 1 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q102") {
+        cout << "Eingegeben wurde ---> 2 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q103") {
+        cout << "Eingegeben wurde ---> 3 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q104") {
+        cout << "Eingegeben wurde ---> 4 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q105") {
+        cout << "Eingegeben wurde ---> 5 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q106") {
+        cout << "Eingegeben wurde ---> 6 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q107") {
+        cout << "Eingegeben wurde ---> 7 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q108") {
+        cout << "Eingegeben wurde ---> 8 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q109") {
+        cout << "Eingegeben wurde ---> 9 \n";
+        return endzustandErreicht;
+    }
+    if (aktuellerZustand == "Q110") {
+        cout << "Eingegeben wurde ---> 10 \n";
+        return endzustandErreicht;
+    }
+
+    return enzustandNichtErreicht;
 }
 
 /**
@@ -69,6 +99,13 @@ string roemischeZahlVonTastaturEinlesen() {
     string eingabe;
     getline(cin, eingabe);
     return eingabe;
+}
+
+eingabefehler checkeUserEingabe(const string& eingabe) {
+    if (eingabe.size() == 0) return eingabefehler::keinZeichenEingegeben;
+    if (eingabe.size() != 1) return eingabefehler::mehrAlsEinZeichenEingegeben;
+    if (eingabe != "I" && eingabe != "V" && eingabe != "X" && eingabe != "#") return eingabefehler::nichtImEingabeAlphabet;
+    return eingabefehler::keinEingabefehler;
 }
 
 /**
@@ -90,39 +127,21 @@ string roemischeZahlVonTastaturEinlesen() {
  *      verhindert normalerweise eine Rückgabe während des laufenden Programms).
  */
 int main() {
-    while (1){
+    while (true){
         string aktuellerZustand = "Q0";
-        string eingabe = roemischeZahlVonTastaturEinlesen();
-        bool eingabefehler = false;
+
+        cout << "--------------------------------------------------------------------------------------\n";
+        cout << "Roemer Zahlen Converter \n";
+        cout << "Gebe einen Buchstaben I, V, X ein. \n";
+        cout << "Zum beenden # eingeben, dies symbolisiert das der letzte Buchstabe eingegeb wurde \n";
+        cout << "--------------------------------------------------------------------------------------\n";
 
         // Schleife über jedes Zeichen der Eingabe
-        for (auto aktuellesZeichen_it = eingabe.begin(); aktuellesZeichen_it != eingabe.end(); ++aktuellesZeichen_it) {
-            string eingabeZeichenAlsString(1, char(*aktuellesZeichen_it));
-            if (eingabeZeichenAlsString != "I" && eingabeZeichenAlsString != "V" && eingabeZeichenAlsString != "X") eingabefehler = true;
-            cout << "Debugger - Aktuelles betrachtetes Zeichen (" << eingabeZeichenAlsString << ") Wo bin ich gerade -> (" << aktuellerZustand << ")\n";
-            aktuellerZustand = zustandsTabelle[{aktuellerZustand, eingabeZeichenAlsString}]; // Hier passssiert die Magie
-
-            /**-----------------------------------------------------------------------------------
-             * Für den fall, dass auch auf den "Zwischenzuständen" eine Aktion ausgeführt werden sollte,
-             * könnte man das hier Implementieren. In unseren Fall interessiert uns nur der Endzustand.
-             * D.h. interessieren wir uns an dieser stelle nicht für den "Pfad" durch den Automaten
-             *
-             * if (aktuellerZustand  == "Q1") {
-             *   cout << "wir sind in Q1\n";
-             * }
-             * if (aktuellerZustand  == "Q2") {
-             *    cout << "wir sind in Q2\n";
-             * }
-             * ...
-             * if (aktuellerZustand  == "Q10") {
-             *    cout << "wir sind in Q10\n";
-             * }
-             * if (aktuellerZustand  == "err") {
-             *    cout << "wir sind in err\n";
-             * }
-             * ----------------------------------------------------------------------------------- */
+        while (true) {
+            string eingabe = roemischeZahlVonTastaturEinlesen();
+            eingabefehler fehlerBeiDerEingabe = checkeUserEingabe(eingabe);
+            if (tueEtwas(aktuellerZustand, eingabe, fehlerBeiDerEingabe) == endzustandErreicht) break;
         }
-        gebeLoesungAus(aktuellerZustand, eingabefehler);
     }
     return 0;
 }

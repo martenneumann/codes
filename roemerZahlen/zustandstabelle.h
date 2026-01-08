@@ -10,8 +10,8 @@
 using namespace std;
 
 /// Konstanten
-constexpr bool endzustandErreicht       = true;
-constexpr bool enzustandNichtErreicht   = false;
+constexpr bool endzustandErreicht       = false;
+constexpr bool enzustandNichtErreicht   = true;
 constexpr bool eingabefehlerErkannt     = false;
 
 
